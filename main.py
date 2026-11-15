@@ -14,10 +14,7 @@ def UI():
         print(choice)
         match choice:
             case '1':
-                title = input('Title of the Book: ')
-                id= int(input('id of the book: '))
-                number= int(input('number of copies of the book: '))
-                addBook(title,id,number)
+                add_book()
             case '2':
                 print(2)
             case '3':
@@ -32,13 +29,22 @@ def UI():
                 break
             case _:
                 print('invalid input \n \n')
-Books = []
-def addBook(title,id,number):
-    book1 = classes.Book(title,id,number)
-    Books.append(book1)
-    print(Books)
+def add_book():
+    title = input("Title of the book: ")
 
+    while True:
+        text = input("ID of the book: ")
+        if text.isdigit():
+            id = int(text)
+            break
 
+    while True:
+        text = input("Number of copies: ")
+        if text.isdigit():
+            copies = int(text)
+            break
+
+    print(library.add_book(title, id, copies))
 
 
 
