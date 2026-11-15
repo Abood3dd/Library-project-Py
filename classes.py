@@ -1,4 +1,3 @@
-import json
 
 class Book:
     def __init__(self, title, id, copies):
@@ -39,23 +38,47 @@ class Book:
             return True
         return False
 
-    # Saving and loading
-    def to_dict(self):
-        return {"title": self.get_title(), "id": self.get_id(), "copies": self.get_copies()}
-
-    @classmethod
-    def from_dict(cls, data):
-        return cls(data["title"], data["id"], data["copies"])
 
 
-def save_books(books, filename="books.json"):
-    with open(filename, "w") as f:
-        json.dump([b.to_dict() for b in books], f, indent=4)
+class Borrower:
+    MAX_LOANS = 3
+
+    def __init__(self, id, name):
+        self.set_id(id)
+        self.set_name(name)
+        self.__active_loans = []
+
+    # Setters
+    def set_id(self, id):
+        self.__id = id
+
+    def set_name(self, name):
+        self.__name = name
+
+    # Getters
+    def get_id(self):
+        return self.__id
+
+    def get_name(self):
+        return self.__name
+
+    def get_active_loans(self):
+        return (self.__active_loans)
+
+    def active_loan_number(self):
+        return len(self.__active_loans)
 
 
-def load_books(filename="books.json"):
-    try:
-        with open(filename, "r") as f:
-            return [Book.from_dict(d) for d in json.load(f)]
-    except FileNotFoundError:
-        return []
+    # Methods 
+    
+    def can_borrow(self):
+        return self.active_loan_number() < Borrower.MAX_LOANS
+
+    def add_loan(self, loan):
+        self.__active_loans.append(loan)
+
+    def remove_loan(self, loan):
+        self.__active_loans.remove(loan)
+
+    def __str__(self):
+        return f"{self.get_name()} (ID: {self.get_id()}, Active loans: {self.active_loan_number()})"
