@@ -41,13 +41,11 @@ class Book:
 
 
 class Borrower:
-    MAX_LOANS = 3
-
+    MAX_LOANS = 3 # can be changed
     def __init__(self, id, name):
         self.set_id(id)
         self.set_name(name)
         self.__active_loans = []
-
     # Setters
     def set_id(self, id):
         self.__id = id
@@ -82,3 +80,54 @@ class Borrower:
 
     def __str__(self):
         return f"{self.get_name()} (ID: {self.get_id()}, Active loans: {self.active_loan_number()})"
+
+# Added a separate class for loans because it makes more sense
+# it includes the things that the book class doesn't have
+# like due day and the borrower
+class Loan:
+    def __init__(self, book, borrower, due_day):
+        self.__book = book
+        self.__borrower = borrower
+        self.__due_day = due_day
+        self.__return_day = 'not returned' #"not returned" if not returned yet otherwise the day it was returned
+    #getters
+    def get_book(self):
+        return self.__book
+
+    def get_borrower(self):
+        return self.__borrower
+
+    def get_due_day(self):
+        return self.__due_day
+    
+    #methods
+
+    def late_days(self, day):
+        # zero if on time otherwise day minus due day
+        if day > self.__due_day:
+            return day - self.__due_day
+        return 0
+
+    def return_book(self, return_day):
+        self.__return_day = return_day
+        return self.late_days(return_day)
+
+class Library:
+    MAX_LOANS = 3      # active loans allowed
+    LOAN_PERIOD = 14   # loan period is 2 weeks (can be changed)
+
+    def __init__(self):
+        self.__books = [] # stores the books in the library
+        self.__borrowers = [] # the borrowers of the library
+        self.__loans = []   # every Loan made ( so we can go back to them to check for overdue loans)
+
+
+    #Adding 
+    def add_book(self, title, id, copies):
+        self.__books.append(Book(title, id, copies))
+        
+        return "Book added."
+
+    def add_borrower(self, id, name):
+        self.__borrowers.append(Borrower(id, name))
+        return "Borrower added."

@@ -1,34 +1,43 @@
 import classes
+library = classes.Library()
 def UI():
     while True:
-        print("===== LIBRARY MANAGEMENT SYSTEM =====")
-        print('1. Add Book')
-        print('2. Search Books')
-        print('3. Return Book')
-        print('4. View Overdue Loans')
-        print('5. Add Borrower')
-        print('6. Exit')
-        print('-'*10)
-    
-        choice = (input('Enter your choice: '))
-        print(choice)
+        print("\n===== LIBRARY MANAGEMENT SYSTEM =====")
+        print("1. Add Book")
+        print("2. Search Books")
+        print("3. Add Borrower")
+        print("4. Lend Book")
+        print("5. Return Book")
+        print("6. View Overdue Loans")
+        print("7. Exit")
+        print("-" * 10)
+
+        choice = input("Enter your choice: ").strip()
         match choice:
-            case '1':
+            case "1":
                 add_book()
-            case '2':
+            case "2":
                 print(2)
-            case '3':
-                print(3)
-            case '4':
+                #search_books()
+            case "3":
+                add_borrower()
+            case "4":
                 print(4)
-            case '5':
+                #lend_book()
+            case "5":
                 print(5)
-            case '6':
-                print('Exiting the program')
-                print('Good Bye')
+                #return_book()
+            case "6":
+                print(6)
+                #view_overdue()
+            case "7":
+                print("Exiting the program")
+                print("Good Bye")
                 break
             case _:
-                print('invalid input \n \n')
+                print("Invalid input\n")
+
+
 def add_book():
     title = input("Title of the book: ")
 
@@ -46,10 +55,22 @@ def add_book():
 
     print(library.add_book(title, id, copies))
 
+def add_borrower():
+    name = input("Name of the borrower: ")
+
+    while True:
+        text = input("ID of the borrower: ")
+        if text.isdigit():
+            id = int(text)
+            break
+
+    print(library.add_borrower(name, id))
 
 
 
 def main():
-    
     UI()
-main()
+
+
+if __name__ == "__main__":
+    main()
