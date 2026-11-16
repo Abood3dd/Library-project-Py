@@ -12,30 +12,36 @@ def UI():
         print("7. Exit")
         print("-" * 10)
 
-        choice = input("Enter your choice: ").strip()
-        match choice:
-            case "1":
-                add_book()
-            case "2":
-                print(2)
-                #search_books()
-            case "3":
-                add_borrower()
-            case "4":
-                print(4)
-                #lend_book()
-            case "5":
-                print(5)
-                #return_book()
-            case "6":
-                print(6)
-                #view_overdue()
-            case "7":
-                print("Exiting the program")
-                print("Good Bye")
-                break
-            case _:
-                print("Invalid input\n")
+        # try/except added: keeps the menu alive if any option fails,
+        # and exits cleanly on Ctrl+C or end of input
+        try:
+            choice = input("Enter your choice: ").strip()
+            match choice:
+                case "1":
+                    add_book()
+                case "2":
+                    print(2)
+                    #search_books()
+                case "3":
+                    add_borrower()
+                case "4":
+                    print(4)
+                    #lend_book()
+                case "5":
+                    print(5)
+                    #return_book()
+                case "6":
+                    print(6)
+                    #view_overdue()
+                case "7":
+                    print("Exiting the program")
+                    print("Good Bye")
+                    break
+                case _:
+                    print("Invalid input\n")
+        except Exception as e:
+            print(f"Something went wrong: {e}")
+            print("Returning to the menu.")
 
 
 def add_book():
@@ -44,14 +50,20 @@ def add_book():
     while True:
         text = input("ID of the book: ")
         if text.isdigit():
-            id = int(text)
-            break
+            try:
+                id = int(text)
+                break
+            except ValueError:
+                print("Invalid number, please try again.")
 
     while True:
         text = input("Number of copies: ")
         if text.isdigit():
-            copies = int(text)
-            break
+            try:
+                copies = int(text)
+                break
+            except ValueError:
+                print("Invalid number, please try again.")
 
     print(library.add_book(title, id, copies))
 
@@ -61,10 +73,13 @@ def add_borrower():
     while True:
         text = input("ID of the borrower: ")
         if text.isdigit():
-            id = int(text)
-            break
+            try:
+                id = int(text)
+                break
+            except ValueError:
+                print("Invalid number, please try again.")
 
-    print(library.add_borrower(name, id))
+    print(library.add_borrower(id, name))
 
 
 

@@ -76,7 +76,10 @@ class Borrower:
         self.__active_loans.append(loan)
 
     def remove_loan(self, loan):
-        self.__active_loans.remove(loan)
+        try:
+            self.__active_loans.remove(loan)
+        except ValueError:
+            print("This loan was not found in the borrower's active loans.")
 
     def __str__(self):
         return f"{self.get_name()} (ID: {self.get_id()}, Active loans: {self.active_loan_number()})"
@@ -131,3 +134,10 @@ class Library:
     def add_borrower(self, id, name):
         self.__borrowers.append(Borrower(id, name))
         return "Borrower added."
+"""So here's how it's going to work
+we have classes for Book, Borrower, Loan and Library
+the Library class is the main class that will be used to manage the library and it has the methods that will be used
+we have the book class that will be used to create book objects and the borrower class that will be used to create borrower objects
+the loan class will be used to create loan objects that will be used to keep track of the loans and the due dates and the return dates
+the library class will have a list of books, borrowers and loans and will have methods to add books, borrowers and loans and to search for books and borrowers
+and to lend and return books and to view overdue loans"""
