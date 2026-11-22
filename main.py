@@ -1,3 +1,4 @@
+import os
 import classes
 library = classes.Library()
 def UI():
@@ -42,45 +43,112 @@ def UI():
 
 
 def add_book():
-    title = input("Title of the book: ")
-    file = open('books.txt','a')
-    
+    books = library.get_books()
+    ids = [book.get_id() for book in books]
 
-    while True:
-        text = input("ID of the book: ")
-        if text.isdigit():
-            try:
+    title = input("Title of the book: ")
+    existing = None
+    for book in books:
+        if book.get_title() == title:
+            existing = book
+            break
+
+    if existing:
+        id = existing.get_id()
+        print("That book is already in stock -> updating the number of copies ")
+    else:
+        while True:
+            text = input("ID of the book: ")
+            if text.isdigit():
                 id = int(text)
-                break
-            except ValueError:
+                if id not in ids:
+                    break
+                print("That book ID is already in use, please enter a unique ID.")
+            else:
                 print("Invalid number, please try again.")
 
     while True:
         text = input("Number of copies: ")
-        if text.isdigit():
-            try:
-                copies = int(text)
-                break
-            except ValueError:
-                print("Invalid number, please try again.")
-    file.write(title+'\n')
-    file.write(str(id)+'\n')
-    file.write(str(copies)+'\n')
-    
+        if text.isdigit() and int(text) > 0:
+            copies = int(text)
+            break
+        print("Invalid number, please try again.")
+    if existing:  # Update the existing book record in the file
+        updated_copies = existing.get_copies() + copies
+        try:
+            original = open('books.txt', 'r')
+            lines = original.readlines()
+            original.close()
 
-    print(library.add_book(title, id, copies))
+            for i in range(0, len(lines) - 2, 3):#the step is 3 because each 3 lines represent one book 
+                # used len(lines)-2 because we're sure that the last 2 lines will never be titles
+                if (lines[i].rstrip('\n') == title
+                        and lines[i + 1].strip() == str(id)):
+                    lines[i + 2] = str(updated_copies) + '\n'
+                    break
+
+            temp = open('booksTemp.txt', 'w')
+            temp.writelines(lines)
+            temp.close()
+            os.remove('books.txt')
+            os.rename('booksTemp.txt', 'books.txt')
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            try:
+                os.remove('booksTemp.txt')
+            except:
+                print('error occured')
+            return
+
+        existing.set_copies(updated_copies)
+        print(f"Updated copies of '{title}' to {existing.get_copies()}.")
+    else:
+        try:
+            file = open('books.txt', 'a')
+            file.write(title + '\n')
+            file.write(str(id) + '\n')
+            file.write(str(copies) + '\n')
+        except IOError as e:
+            print(f"Could not update books.txt: {e}")
+            return # to stop the the function from running
+        print(library.add_book(title, id, copies))
 
 def add_borrower():
     name = input("Name of the borrower: ")
+    ids = [borrower.get_id() for borrower in library.get_borrowers()]
+
+    try:
+        file = open('borrowers.txt', 'r')
+        lines = file.readlines()
+        file.close()
+        # Borrower records are stored as name and ID on alternating lines
+        for i in range(1, len(lines), 2):
+            text = lines[i].strip()
+            if text.isdigit():
+                ids.append(int(text))
+    except FileNotFoundError:
+        print('error occured')
+        pass
 
     while True:
         text = input("ID of the borrower: ")
-        if text.isdigit():
-            try:
-                id = int(text)
+        if not text.isdigit():
+            print("Invalid number, please try again.")
+        else:
+            id = int(text)
+            if id in ids:
+                print("That borrower ID is already in use, please enter a unique ID.")
+            else:
                 break
-            except ValueError:
-                print("Invalid number, please try again.")
+
+    try:
+        file = open('borrowers.txt', 'a')
+        file.write(name + '\n')
+        file.write(str(id) + '\n')
+        file.close()
+    except IOError as e:
+        print(f"Could not update borrowers.txt: {e}")
+        return
 
     print(library.add_borrower(id, name))
 
@@ -91,7 +159,7 @@ def search_books():
     if query.isdigit():
         #then he entered an id and search accordingly
         for i in library.get_books():
-                    if i.get_id()==query: print(i)
+                    if int(i.get_id())==int(query): print(i)
                 
     else:
        

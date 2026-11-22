@@ -136,17 +136,30 @@ class Library:
         return "Borrower added."
     def load_data(self):
         try:
-            books = open('books.txt','r')
+            books = open('books.txt', 'r')
             lines = books.readlines()
-        
+            books.close()
+
             for i in range(0, len(lines), 3):
                 title = lines[i].strip()
                 book_id = int(lines[i + 1].strip())
                 copies = int(lines[i + 2].strip())
                 self.add_book(title, book_id, copies)
-        except IOError: print('an error occured with the file')
+        except ValueError as error:
+            print(f'Could not load books: {error}')
+        try:
+            borrowers = open('borrowers.txt', 'r')
+            lines = borrowers.readlines()
+            borrowers.close()
+            for i in range(0, len(lines), 2):
+                name = lines[i].strip()
+                borrower_id = int(lines[i + 1].strip())
+                self.add_borrower(borrower_id, name)
+        except (OSError, ValueError) as error:
+            print(f'Could not load borrowers: {error}')
     def get_books(self):
         return self.__books
+    def get_borrowers(self):return self.__borrowers
 
 
 
