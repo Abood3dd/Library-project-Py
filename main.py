@@ -12,16 +12,13 @@ def UI():
         print("7. Exit")
         print("-" * 10)
 
-        # try/except added: keeps the menu alive if any option fails,
-        # and exits cleanly on Ctrl+C or end of input
         try:
             choice = input("Enter your choice: ").strip()
             match choice:
                 case "1":
                     add_book()
                 case "2":
-                    print(2)
-                    #search_books()
+                    search_books()
                 case "3":
                     add_borrower()
                 case "4":
@@ -46,6 +43,8 @@ def UI():
 
 def add_book():
     title = input("Title of the book: ")
+    file = open('books.txt','a')
+    
 
     while True:
         text = input("ID of the book: ")
@@ -64,6 +63,10 @@ def add_book():
                 break
             except ValueError:
                 print("Invalid number, please try again.")
+    file.write(title+'\n')
+    file.write(str(id)+'\n')
+    file.write(str(copies)+'\n')
+    
 
     print(library.add_book(title, id, copies))
 
@@ -81,9 +84,24 @@ def add_borrower():
 
     print(library.add_borrower(id, name))
 
-
+def search_books():
+    #we need to ask for the title or id
+    #then try to look them up in the books list in the library
+    query = input('Title or Id: ')
+    if query.isdigit():
+        #then he entered an id and search accordingly
+        for i in library.get_books():
+                    if i.get_id()==query: print(i)
+                
+    else:
+       
+       for i in library.get_books():
+                   if i.get_title()==query: print(i)
+               
+        # he entered a title and search accordingly
 
 def main():
+    library.load_data()
     UI()
 
 

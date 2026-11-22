@@ -1,6 +1,6 @@
-
 Library Loan Manager
 Track books, borrowers, and current loans. Suggested classes: Book and Library.
+
 1. Store books and borrowers with unique IDs. A book may have several copies. Add books and search by title or
 ID.
 2. Lend a book only if a copy is available and the borrower has fewer than three active loans. Update both the
@@ -11,4 +11,4 @@ otherwise return day minus due day.
 overdue-book count and total late days.
 
 
-# Library-project-Py
+

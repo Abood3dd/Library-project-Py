@@ -134,6 +134,28 @@ class Library:
     def add_borrower(self, id, name):
         self.__borrowers.append(Borrower(id, name))
         return "Borrower added."
+    def load_data(self):
+        try:
+            books = open('books.txt','r')
+            lines = books.readlines()
+        
+            for i in range(0, len(lines), 3):
+                title = lines[i].strip()
+                book_id = int(lines[i + 1].strip())
+                copies = int(lines[i + 2].strip())
+                self.add_book(title, book_id, copies)
+        except IOError: print('an error occured with the file')
+    def get_books(self):
+        return self.__books
+
+
+
+
+
+
+
+
+
 """So here's how it's going to work
 we have classes for Book, Borrower, Loan and Library
 the Library class is the main class that will be used to manage the library and it has the methods that will be used
