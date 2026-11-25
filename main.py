@@ -25,8 +25,7 @@ def UI():
                 case "4":
                     lend_book()
                 case "5":
-                    print(5)
-                    #return_book()
+                    return_book()
                 case "6":
                     print(6)
                     #view_overdue()
@@ -184,6 +183,12 @@ def lend_book():
     book_id = ask_number("ID of the book: ")
     day = ask_number("Day number: ")
     print(library.lend_book(borrower_id, book_id, day))
+
+def return_book():
+    borrower_id = ask_number("ID of the borrower: ")
+    book_id = ask_number("ID of the book: ")
+    day = ask_number("Return day number: ")
+    print(library.return_book(borrower_id, book_id, day))
 
 def main():
     library.load_data()

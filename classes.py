@@ -163,6 +163,23 @@ class Library:
         borrower.add_loan(loan)
         return f"Book lent. Due on day {loan.get_due_day()}."
     
+    def return_book(self, borrower_id, book_id, return_day):
+        borrower = self.find_borrower(borrower_id)
+        if borrower is None:
+            return "Borrower not found."
+        book = self.find_book(book_id)
+        if book is None:
+            return "Book not found."
+        for loan in borrower.get_active_loans():
+            if loan.get_book() == book:
+                if return_day < loan.get_due_day() - Library.LOAN_PERIOD:
+                    return "Return day cannot be before the lend day."
+                late = loan.return_book(return_day)
+                book.returnBook()
+                borrower.remove_loan(loan)
+                return f"Book returned. Late days: {late}."
+        return "This borrower has no active loan for this book."
+    
     def load_data(self):
         try:
             books = open('books.txt', 'r')
