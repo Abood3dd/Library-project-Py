@@ -23,8 +23,7 @@ def UI():
                 case "3":
                     add_borrower()
                 case "4":
-                    print(4)
-                    #lend_book()
+                    lend_book()
                 case "5":
                     print(5)
                     #return_book()
@@ -172,6 +171,19 @@ def search_books():
                        Flag = True
     if not Flag : print('No Book was Found')       
         # he entered a title and search accordingly
+
+def ask_number(message):
+    while True:
+        text = input(message)
+        if text.isdigit():
+            return int(text)
+        print("Invalid number, please try again.")
+
+def lend_book():
+    borrower_id = ask_number("ID of the borrower: ")
+    book_id = ask_number("ID of the book: ")
+    day = ask_number("Day number: ")
+    print(library.lend_book(borrower_id, book_id, day))
 
 def main():
     library.load_data()
