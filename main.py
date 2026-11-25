@@ -156,16 +156,21 @@ def search_books():
     #we need to ask for the title or id
     #then try to look them up in the books list in the library
     query = input('Title or Id: ')
+    Flag = False 
     if query.isdigit():
         #then he entered an id and search accordingly
         for i in library.get_books():
-                    if int(i.get_id())==int(query): print(i)
+                    if int(i.get_id())==int(query):
+                        print(i)
+                        Flag = True 
                 
     else:
        
        for i in library.get_books():
-                   if i.get_title()==query: print(i)
-               
+                   if i.get_title()==query:
+                       print(i)
+                       Flag = True
+    if not Flag : print('No Book was Found')       
         # he entered a title and search accordingly
 
 def main():
