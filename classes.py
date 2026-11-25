@@ -134,6 +134,52 @@ class Library:
     def add_borrower(self, id, name):
         self.__borrowers.append(Borrower(id, name))
         return "Borrower added."
+    
+    def find_book(self, book_id):#created this method to use in lending a book
+        for book in self.__books:
+            if book.get_id() == book_id:
+                return book
+        return None
+
+    def find_borrower(self, borrower_id): #created this method to use in lending a book
+        for borrower in self.__borrowers:
+            if borrower.get_id() == borrower_id:
+                return borrower
+        return None
+
+    def lend_book(self, borrower_id, book_id, day):
+        book = self.find_book(book_id)
+        if book is None:
+            return "Book not found."
+        borrower = self.find_borrower(borrower_id)
+        if borrower is None:
+            return "Borrower not found."
+        if not borrower.can_borrow():
+            return "This borrower already has 3 active loans."
+        if not book.lendBook():
+            return "No copies available."
+        loan = Loan(book, borrower, day + Library.LOAN_PERIOD)
+        self.__loans.append(loan)
+        borrower.add_loan(loan)
+        return f"Book lent. Due on day {loan.get_due_day()}."
+    
+    def return_book(self, borrower_id, book_id, return_day):
+        borrower = self.find_borrower(borrower_id)
+        if borrower is None:
+            return "Borrower not found."
+        book = self.find_book(book_id)
+        if book is None:
+            return "Book not found."
+        for loan in borrower.get_active_loans():
+            if loan.get_book() == book:
+                if return_day < loan.get_due_day() - Library.LOAN_PERIOD:
+                    return "Return day cannot be before the lend day."
+                late = loan.return_book(return_day)
+                book.returnBook()
+                borrower.remove_loan(loan)
+                return f"Book returned. Late days: {late}."
+        return "This borrower has no active loan for this book."
+    
     def load_data(self):
         try:
             books = open('books.txt', 'r')

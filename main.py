@@ -23,11 +23,9 @@ def UI():
                 case "3":
                     add_borrower()
                 case "4":
-                    print(4)
-                    #lend_book()
+                    lend_book()
                 case "5":
-                    print(5)
-                    #return_book()
+                    return_book()
                 case "6":
                     print(6)
                     #view_overdue()
@@ -156,17 +154,41 @@ def search_books():
     #we need to ask for the title or id
     #then try to look them up in the books list in the library
     query = input('Title or Id: ')
+    Flag = False 
     if query.isdigit():
         #then he entered an id and search accordingly
         for i in library.get_books():
-                    if int(i.get_id())==int(query): print(i)
+                    if int(i.get_id())==int(query):
+                        print(i)
+                        Flag = True 
                 
     else:
        
        for i in library.get_books():
-                   if i.get_title()==query: print(i)
-               
+                   if i.get_title()==query:
+                       print(i)
+                       Flag = True
+    if not Flag : print('No Book was Found')       
         # he entered a title and search accordingly
+
+def ask_number(message):
+    while True:
+        text = input(message)
+        if text.isdigit():
+            return int(text)
+        print("Invalid number, please try again.")
+
+def lend_book():
+    borrower_id = ask_number("ID of the borrower: ")
+    book_id = ask_number("ID of the book: ")
+    day = ask_number("Day number: ")
+    print(library.lend_book(borrower_id, book_id, day))
+
+def return_book():
+    borrower_id = ask_number("ID of the borrower: ")
+    book_id = ask_number("ID of the book: ")
+    day = ask_number("Return day number: ")
+    print(library.return_book(borrower_id, book_id, day))
 
 def main():
     library.load_data()
