@@ -27,8 +27,7 @@ def UI():
                 case "5":
                     return_book()
                 case "6":
-                    print(6)
-                    #view_overdue()
+                     view_overdue()
                 case "7":
                     print("Exiting the program")
                     print("Good Bye")
@@ -189,6 +188,18 @@ def return_book():
     book_id = ask_number("ID of the book: ")
     day = ask_number("Return day number: ")
     print(library.return_book(borrower_id, book_id, day))
+
+def view_overdue():
+    day = ask_number("Current day number: ")
+    report = library.overdue_report(day)
+    if not report:
+        print("No overdue loans.")
+    for borrower in report:
+        loans = report[borrower]["loans"]
+        late = report[borrower]["late_days"]
+        print(f"{borrower.get_name()} (ID: {borrower.get_id()}): {len(loans)} overdue book(s), {late} late day(s)")
+        for loan in loans:
+            print(f"   - {loan.get_book().get_title()}: due day {loan.get_due_day()}, {loan.late_days(day)} day(s) late")
 
 def main():
     library.load_data()
