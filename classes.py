@@ -114,6 +114,9 @@ class Loan:
     def return_book(self, return_day):
         self.__return_day = return_day
         return self.late_days(return_day)
+    
+    def is_active(self): #checks if loan is still active so false if it's a number 
+        return self.__return_day == 'not returned'
 
 class Library:
     MAX_LOANS = 3      # active loans allowed
@@ -179,6 +182,17 @@ class Library:
                 borrower.remove_loan(loan)
                 return f"Book returned. Late days: {late}."
         return "This borrower has no active loan for this book."
+
+    def overdue_report(self, current_day):
+        report = {}
+        for loan in self.__loans:
+            if loan.is_active() and loan.late_days(current_day) > 0:
+                borrower = loan.get_borrower()
+                if borrower not in report:
+                    report[borrower] = {"loans": [], "late_days": 0}
+                report[borrower]["loans"].append(loan)
+                report[borrower]["late_days"] += loan.late_days(current_day)
+        return report
     
     def load_data(self):
         try:
