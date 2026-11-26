@@ -164,7 +164,7 @@ class Library:
         loan = Loan(book, borrower, day + Library.LOAN_PERIOD)
         self.__loans.append(loan)
         borrower.add_loan(loan)
-        return f"Book lent. Due on day {loan.get_due_day()}."
+        return f"{book.get_title()} lent. Due on day {loan.get_due_day()}."
     
     def return_book(self, borrower_id, book_id, return_day):
         borrower = self.find_borrower(borrower_id)
