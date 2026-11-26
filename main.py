@@ -164,7 +164,9 @@ def search_books():
     else:
        
        for i in library.get_books():
-                   if i.get_title()==query:
+                   if query.lower() in i.get_title().lower(): # Improved search: ignores uppercase/lowercase and finds books by a single word
+
+
                        print(i)
                        Flag = True
     if not Flag : print('No Book was Found')       
