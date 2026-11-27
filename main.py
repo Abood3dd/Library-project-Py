@@ -27,7 +27,7 @@ def UI():
                 case "5":
                     return_book()
                 case "6":
-                     view_overdue()
+                    view_overdue()
                 case "7":
                     print("Exiting the program")
                     print("Good Bye")
@@ -43,10 +43,10 @@ def add_book():
     books = library.get_books()
     ids = [book.get_id() for book in books]
 
-    title = input("Title of the book: ")
+    title = input("Title of the book: ").strip() # to make sure that the title doesn't have a space after the user typed it
     existing = None
     for book in books:
-        if book.get_title() == title:
+        if book.get_title().lower() == title.lower():
             existing = book
             break
 
@@ -68,6 +68,7 @@ def add_book():
         text = input("Number of copies: ")
         if text.isdigit() and int(text) > 0:
             copies = int(text)
+
             break
         print("Invalid number, please try again.")
     if existing:  # Update the existing book record in the file
@@ -79,8 +80,7 @@ def add_book():
 
             for i in range(0, len(lines) - 2, 3):#the step is 3 because each 3 lines represent one book 
                 # used len(lines)-2 because we're sure that the last 2 lines will never be titles
-                if (lines[i].rstrip('\n') == title
-                        and lines[i + 1].strip() == str(id)):
+                if lines[i + 1].strip() == str(id):
                     lines[i + 2] = str(updated_copies) + '\n'
                     break
 
@@ -105,6 +105,7 @@ def add_book():
             file.write(title + '\n')
             file.write(str(id) + '\n')
             file.write(str(copies) + '\n')
+            file.close()
         except IOError as e:
             print(f"Could not update books.txt: {e}")
             return # to stop the the function from running
@@ -160,13 +161,10 @@ def search_books():
                     if int(i.get_id())==int(query):
                         print(i)
                         Flag = True 
-                
-    else:
-       
+
+    if not Flag:  # not a number, or no book has that ID -> search by title if the title is a number
        for i in library.get_books():
-                   if query.lower() in i.get_title().lower(): # Improved search: ignores uppercase/lowercase and finds books by a single word
-
-
+                   if query.lower().strip() in i.get_title().lower(): # Improved search: ignores uppercase/lowercase and finds books by a single word
                        print(i)
                        Flag = True
     if not Flag : print('No Book was Found')       
@@ -183,7 +181,7 @@ def lend_book():
     borrower_id = ask_number("ID of the borrower: ")
     book_id = ask_number("ID of the book: ")
     day = ask_number("Day number: ")
-    print(library.lend_book(borrower_id, book_id, day))
+    print(library.lend_book(borrower_id, book_id, day,True))
 
 def return_book():
     borrower_id = ask_number("ID of the borrower: ")

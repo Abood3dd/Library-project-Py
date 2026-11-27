@@ -150,7 +150,7 @@ class Library:
                 return borrower
         return None
 
-    def lend_book(self, borrower_id, book_id, day):
+    def lend_book(self, borrower_id, book_id, day,loadState):
         book = self.find_book(book_id)
         if book is None:
             return "Book not found."
@@ -159,12 +159,20 @@ class Library:
             return "Borrower not found."
         if not borrower.can_borrow():
             return "This borrower already has 3 active loans."
-        if not book.lendBook():
+        if loadState and not book.lendBook(): # when loading from file, books.txt already holds the available copies
             return "No copies available."
         loan = Loan(book, borrower, day + Library.LOAN_PERIOD)
+
+        if loadState: 
+            self.modify_book(book, book)
+            file = open('loans.txt','a')
+            file.write(f"{borrower_id}\n")
+            file.write(f"{book_id}\n")
+            file.write(f"{day}\n")
+            file.close()
         self.__loans.append(loan)
         borrower.add_loan(loan)
-        return f"{book.get_title()} lent. Due on day {loan.get_due_day()}."
+        return f"{book.get_title()} lent to {borrower.get_name()}. Due on day {loan.get_due_day()}."
     
     def return_book(self, borrower_id, book_id, return_day):
         borrower = self.find_borrower(borrower_id)
@@ -180,8 +188,25 @@ class Library:
                 late = loan.return_book(return_day)
                 book.returnBook()
                 borrower.remove_loan(loan)
+                self.modify_book(book, book)
+                self.remove_loan(borrower_id, book_id, loan.get_due_day() - Library.LOAN_PERIOD)
+
                 return f"Book returned. Late days: {late}."
         return "This borrower has no active loan for this book."
+
+    def remove_loan(self, borrower_id, book_id, day): # removes a returned loan from the file
+        try:
+            with open('loans.txt', 'r') as file:
+                lines = file.readlines()
+        except OSError:
+            return
+        for i in range(0, len(lines) - 2, 3):
+            if (lines[i].strip() == str(borrower_id) and lines[i + 1].strip() == str(book_id)
+                    and lines[i + 2].strip() == str(day)):
+                del lines[i:i + 3]
+                with open('loans.txt', 'w') as file:
+                    file.writelines(lines)
+                return
 
     def overdue_report(self, current_day):
         report = {}
@@ -195,6 +220,7 @@ class Library:
         return report
     
     def load_data(self):
+        #load books (stock)
         try:
             books = open('books.txt', 'r')
             lines = books.readlines()
@@ -205,8 +231,9 @@ class Library:
                 book_id = int(lines[i + 1].strip())
                 copies = int(lines[i + 2].strip())
                 self.add_book(title, book_id, copies)
-        except ValueError as error:
+        except (OSError, ValueError, IndexError) as error:
             print(f'Could not load books: {error}')
+        #load borrowers (ppl of the library)
         try:
             borrowers = open('borrowers.txt', 'r')
             lines = borrowers.readlines()
@@ -215,8 +242,44 @@ class Library:
                 name = lines[i].strip()
                 borrower_id = int(lines[i + 1].strip())
                 self.add_borrower(borrower_id, name)
-        except (OSError, ValueError) as error:
+        except (OSError, ValueError, IndexError) as error:
             print(f'Could not load borrowers: {error}')
+        except ValueError as e:
+            print(f'an error has occured with the data: {e}')
+        #load loans 
+        try:
+            loans = open('loans.txt', 'r')
+            lines = loans.readlines()
+            loans.close()
+            for i in range(0, len(lines), 3):
+                borrower_id = int(lines[i].strip())
+                book_id = int(lines[i + 1].strip())
+                day = int(lines[i+2].strip())
+                (self.lend_book(borrower_id, book_id, day,False))
+        except OSError as error:
+            print(f'Could not load loans: {error}')
+        except (ValueError, IndexError) as e:
+            print(f'an error has occured with the data: {e}')
+
+    def modify_book(self, old_book, new_book):# to modify the books in the file once smth changes
+        with open('books.txt', 'r') as file: #took it in lab 12
+            lines = file.readlines()
+
+        for i in range(0, len(lines) - 2, 3):
+            if lines[i + 1].strip() == str(old_book.get_id()):
+                lines[i:i + 3] = [
+                    new_book.get_title() + '\n',
+                    str(new_book.get_id()) + '\n',
+                    str(new_book.get_copies()) + '\n',
+                ]
+                with open('books.txt', 'w') as file:
+                    file.writelines(lines)
+                return True
+
+        return False
+
+
+
     def get_books(self):
         return self.__books
     def get_borrowers(self):return self.__borrowers
