@@ -79,3 +79,4 @@ Invalid menu input prints `Invalid input`. Non-numeric IDs and days are rejected
 
 ## Who did what
 
+--> included in the report
